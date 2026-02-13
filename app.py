@@ -24,9 +24,3 @@ def default():
             "Best Model":f"Our Best model for this Prediction is {best_model}.",
             f"Accuracy of {best_model}:":f"{best_accuracy}"}
 
-@app.post("/churn_prediction")
-def churn_pred(customer:ChurnInput):
-    
-    
-
-    # data = 
