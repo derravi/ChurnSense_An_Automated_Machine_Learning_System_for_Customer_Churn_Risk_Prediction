@@ -24,3 +24,36 @@ def default():
             "Best Model":f"Our Best model for this Prediction is {best_model}.",
             f"Accuracy of {best_model}:":f"{best_accuracy}"}
 
+@app.post("/churn_prediction")
+def churn_pred(customer:ChurnInput):
+
+    data = pd.DataFrame([{
+    'gender': customer.gender,
+    'SeniorCitizen':customer.SeniorCitizen,
+    'Partner': customer.Partner,
+    'Dependents': customer.Dependents,
+    'tenure': customer.tenure,
+    'PhoneService': customer.PhoneService,
+    'MultipleLines': customer.MultipleLines,
+    'InternetService': customer.InternetService,
+    'OnlineSecurity': customer.OnlineSecurity,
+    'OnlineBackup': customer.OnlineBackup,
+    'DeviceProtection': customer.DeviceProtection,
+    'TechSupport': customer.TechSupport,
+    'StreamingTV': customer.StreamingTV,
+    'StreamingMovies': customer.StreamingMovies,
+    'Contract': customer.Contract,
+    'PaperlessBilling': customer.PaperlessBilling,
+    'PaymentMethod': customer.PaymentMethod,
+    'MonthlyCharges': customer.MonthlyCharges,
+    'TotalCharges':customer.TotalCharges
+    }])
+
+    #Lets encode the Categorical columns.
+    for i in temp_3:
+        data[i] = encode[i].transform(data[i])
+    
+    #Lets scal down all the data.
+    data = std.transform(data)
+
+    
