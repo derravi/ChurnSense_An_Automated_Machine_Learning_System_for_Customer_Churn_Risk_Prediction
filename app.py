@@ -3,13 +3,14 @@ import pickle
 from Model.customer_churn_pydantic_model import ChurnInput
 import pandas as pd
 import numpy as np
-
+from fastapi.responses import JSONResponse
 
 app = FastAPI(title="Customer Churn Prediction")
 
-#load Pikle Model First
-with open("Model/customer_churn_pikle_model.pkl","rb") as f:
-    model = pickle.load(f)
+try:
+    #load Pikle Model First
+    with open("Model/customer_churn_pikle_model.pkl","rb") as f:
+        model = pickle.load(f)
     
     encode = model["encoder"]
     lb = model["label_encoder"]
@@ -17,6 +18,12 @@ with open("Model/customer_churn_pikle_model.pkl","rb") as f:
     best_model = model["final_model"]
     best_accuracy = model["model_accuracy"]
     temp_3 = model["column_name"]
+    best_model_name=model["Model_name"]
+
+except FileNotFoundError as e:
+    print(f"error {e}.")
+except Exception as g:
+    print(f"Error {g}.")
 
 @app.get("/")
 def default():
@@ -56,4 +63,12 @@ def churn_pred(customer:ChurnInput):
     #Lets scal down all the data.
     data = std.transform(data)
 
-    
+    prediction = best_model.predict(data)
+
+    ans = "Customer will NOT churn" if prediction[0] == 0 else "Customer WILL churn"
+
+    return JSONResponse(status_code=200,content={
+        "Predicted Answer":f"{ans}",
+        "Model_Name":best_model_name,
+        "Accuracy of Model":best_accuracy,
+    })
